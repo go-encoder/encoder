@@ -78,12 +78,12 @@ func main() {
 ```
 ##### use custom options
 zero or more options can be used each time， supported options for `argon2`：
-* WithMemory    The amount of memory used by the Argon2 algorithm (in kibibytes)
-* WithTime    The number of iterations (or passes) over the memory
-* WithThreads    The number of threads (or lanes) used by the algorithm
-* WithSaltLen    Length of the random salt. 16 bytes is recommended for password hashing
-* WithKeyLen    Length of the generated key (or password hash). 16 bytes or more is recommended
-* WithSalt    Specify the salt, do not use the automatically generated salt
+* `WithMemory`    The amount of memory used by the Argon2 algorithm (in kibibytes)
+* `WithTime`    The number of iterations (or passes) over the memory
+* `WithThreads`    The number of threads (or lanes) used by the algorithm
+* `WithSaltLen`    Length of the random salt. 16 bytes is recommended for password hashing
+* `WithKeyLen`    Length of the generated key (or password hash). 16 bytes or more is recommended
+* `WithSalt`   Specify the salt, do not use the automatically generated salt
 
 ```go
 package main
