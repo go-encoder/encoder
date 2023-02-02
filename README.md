@@ -3,7 +3,7 @@
 [![GoDoc](https://godoc.org/github.com/go-encoder/encoder?status.svg)](https://pkg.go.dev/github.com/go-encoder/encoder)
 [![Go Report Card](https://goreportcard.com/badge/github.com/go-encoder/encoder)](https://goreportcard.com/report/github.com/go-encoder/encoder)
 
-This package in Go provides functions to encode a raw string password (example, during registration on a site), or later verify it (example, while logging in to the site).
+This package in Go provides common interface implementation to encode a raw string password (example, during registration on a site), or later verify it (example, while logging in to the site).
 
 Already supported hash types:
 ```go
