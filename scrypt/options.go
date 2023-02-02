@@ -1,6 +1,6 @@
 package scrypt
 
-import "github.com/go-encoder/encoder/types"
+import "gopkg.in/encoder.v1/types"
 
 // WithSaltLen configure the salt length for Encoder, default value is 16
 func WithSaltLen(len int) types.Option {

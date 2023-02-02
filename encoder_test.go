@@ -2,14 +2,15 @@ package encoder
 
 import (
 	"encoding/base64"
-	"github.com/go-encoder/encoder/types"
+	"gopkg.in/encoder.v1/argon2"
+	"gopkg.in/encoder.v1/types"
 	"testing"
 )
 
 func TestNew(t *testing.T) {
 	data := "hello world"
 
-	encoder := New(types.Scrypt)
+	encoder := New(types.Argon2, argon2.WithSaltLen(32), argon2.WithThreads(8))
 
 	hash, err := encoder.Encode(data)
 	if err != nil {

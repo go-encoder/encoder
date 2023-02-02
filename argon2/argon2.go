@@ -4,8 +4,8 @@ import (
 	"crypto/subtle"
 	"encoding/base64"
 	"fmt"
-	"github.com/go-encoder/encoder/types"
 	"golang.org/x/crypto/argon2"
+	"gopkg.in/encoder.v1/types"
 	"strings"
 )
 
@@ -16,12 +16,18 @@ const (
 )
 
 type Encoder struct {
-	Memory  uint32
-	Time    uint32
+	// The amount of memory used by the algorithm (in kibibytes).
+	Memory uint32
+	// The number of iterations over the memory.
+	Time uint32
+	// The number of threads (or lanes) used by the algorithm.
+	// Recommended value is between 1 and runtime.NumCPU().
 	Threads uint8
+	// Length of the random salt. 16 bytes is recommended for password hashing.
 	SaltLen uint32
-	KeyLen  uint32
-	salt    []byte
+	// Length of the generated key. 16 bytes or more is recommended.
+	KeyLen uint32
+	salt   []byte
 }
 
 // Encode returns the hash value of the given data

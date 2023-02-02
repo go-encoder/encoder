@@ -1,12 +1,12 @@
 package encoder
 
 import (
-	"github.com/go-encoder/encoder/argon2"
-	"github.com/go-encoder/encoder/bcrypt"
-	"github.com/go-encoder/encoder/hkdf"
-	"github.com/go-encoder/encoder/pbkdf2"
-	"github.com/go-encoder/encoder/scrypt"
-	"github.com/go-encoder/encoder/types"
+	"gopkg.in/encoder.v1/argon2"
+	"gopkg.in/encoder.v1/bcrypt"
+	"gopkg.in/encoder.v1/hkdf"
+	"gopkg.in/encoder.v1/pbkdf2"
+	"gopkg.in/encoder.v1/scrypt"
+	"gopkg.in/encoder.v1/types"
 )
 
 // New Returns an encoder instance of the specified type

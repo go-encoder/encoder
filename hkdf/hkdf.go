@@ -2,8 +2,8 @@ package hkdf
 
 import (
 	"encoding/hex"
-	"github.com/go-encoder/encoder/types"
 	"golang.org/x/crypto/hkdf"
+	"gopkg.in/encoder.v1/types"
 	"hash"
 )
 

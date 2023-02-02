@@ -2,8 +2,8 @@ package scrypt
 
 import (
 	"encoding/hex"
-	"github.com/go-encoder/encoder/types"
 	"golang.org/x/crypto/scrypt"
+	"gopkg.in/encoder.v1/types"
 )
 
 type Encoder struct {

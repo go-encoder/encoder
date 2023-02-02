@@ -1,6 +1,6 @@
 package argon2
 
-import "github.com/go-encoder/encoder/types"
+import "gopkg.in/encoder.v1/types"
 
 // WithMemory configure the memory for Encoder, default value is 64 * 1024
 func WithMemory(memory uint32) types.Option {

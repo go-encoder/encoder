@@ -45,5 +45,9 @@ type Option interface {
 func GenerateRandomSalt(len int) ([]byte, error) {
 	b := make([]byte, len)
 	_, err := rand.Read(b)
-	return b, err
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
 }

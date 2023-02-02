@@ -1,7 +1,7 @@
 package hkdf
 
 import (
-	"github.com/go-encoder/encoder/types"
+	"gopkg.in/encoder.v1/types"
 	"hash"
 )
 

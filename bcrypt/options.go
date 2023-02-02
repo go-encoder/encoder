@@ -1,6 +1,6 @@
 package bcrypt
 
-import "github.com/go-encoder/encoder/types"
+import "gopkg.in/encoder.v1/types"
 
 // WithCost configure the cost for BcryptEncoder
 func WithCost(cost int) types.Option {
