@@ -64,20 +64,26 @@ func main() {
 
 	hash, err := encoding.Encode(data)
 	if err != nil {
-		fmt.Println(err.Error())
 		return
 	}
 	fmt.Println(hash)
+	verify, err := encoding.Verify(hash, data)
+	if err != nil {
+		return
+	}
+	if verify {
+		fmt.Println("match")
+    }
 }
 ```
 ##### use custom options
 zero or more options can be used each time， supported options for `argon2`：
-* WithMemory
-* WithTime
-* WithThreads
-* WithSaltLen
-* WithKeyLen
-* WithSalt
+* WithMemory    The amount of memory used by the Argon2 algorithm (in kibibytes)
+* WithTime    The number of iterations (or passes) over the memory
+* WithThreads    The number of threads (or lanes) used by the algorithm
+* WithSaltLen    Length of the random salt. 16 bytes is recommended for password hashing
+* WithKeyLen    Length of the generated key (or password hash). 16 bytes or more is recommended
+* WithSalt    Specify the salt, do not use the automatically generated salt
 
 ```go
 package main
@@ -93,6 +99,7 @@ func main() {
 	data := "hello world"
 	// set salt length and threads
 	encoding := encoder.New(types.Argon2, argon2.WithSaltLen(32), argon2.WithThreads(8))
+	// encoder.NewArgon2Encoder(argon2.WithSaltLen(32), argon2.WithThreads(8))
 
 	hash, err := encoding.Encode(data)
 	if err != nil {
@@ -100,5 +107,12 @@ func main() {
 		return
 	}
 	fmt.Println(hash)
+	verify, err := encoding.Verify(hash, data)
+	if err != nil {
+		return
+	}
+	if verify {
+		fmt.Println("match")
+	}
 }
 ```
