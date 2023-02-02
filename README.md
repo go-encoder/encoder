@@ -39,7 +39,7 @@ When you call the `New()` method, you can also provide zero or more `Options` to
 go get gopkg.in/encoder.v1
 ```
 
-Run `go test` in the package's directory to run tests.
+Run `go test` in the package's directory to run test case.
 
 ### Usage
 
