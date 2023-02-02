@@ -70,3 +70,8 @@ func NewArgon2Encoder(opts ...types.Option) types.Encoder {
 func NewScryptEncoder(opts ...types.Option) types.Encoder {
 	return New(types.Scrypt, opts...)
 }
+
+// NewHkdfEncoder Returns Hkdf encoder instance
+func NewHkdfEncoder(opts ...types.Option) types.Encoder {
+	return New(types.Hkdf, opts...)
+}
