@@ -59,7 +59,8 @@ import (
 func main() {
 	data := "hello world"
 	// Using the default options
-	encoding := encoder.New(types.Argon2)
+	// types.Argon2 types.Pbkdf2 types.Bcrypt types.Hkdf types.Scrypt
+ 	encoding := encoder.New(types.Argon2) // or use encoder.NewArgon2Encoder()
 
 	hash, err := encoding.Encode(data)
 	if err != nil {
