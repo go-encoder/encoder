@@ -1,5 +1,5 @@
 # go-encoder
-[![Build Status](https://api.travis-ci.org/go-encoder/encoder.svg?branch=master)](https://travis-ci.org/go-encoder/encoder)
+[![Build Status](https://app.travis-ci.com/go-encoder/encoder.svg?branch=main)](https://travis-ci.org/go-encoder/encoder)
 [![GoDoc](https://godoc.org/github.com/go-encoder/encoder?status.svg)](https://pkg.go.dev/github.com/go-encoder/encoder)
 [![Go Report Card](https://goreportcard.com/badge/github.com/go-encoder/encoder)](https://goreportcard.com/report/github.com/go-encoder/encoder)
 
