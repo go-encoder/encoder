@@ -19,6 +19,17 @@ type Encoder struct {
 	Iterations int
 	KeyLen     int
 	HashFunc   func() hash.Hash
+	hashValue  []byte
+}
+
+// Hash Generate and return a hash value in []byte format
+func (e *Encoder) Hash(src string) ([]byte, error) {
+	if e.hashValue != nil {
+		return e.hashValue, nil
+	}
+	e.generateSalt(e.SaltLen)
+	e.hashValue = pbkdf2.Key([]byte(src), e.salt, e.Iterations, e.KeyLen, e.HashFunc)
+	return e.hashValue, nil
 }
 
 func (e *Encoder) generateSalt(length int) {
@@ -34,9 +45,13 @@ func (e *Encoder) generateSalt(length int) {
 
 // Encode returns the hash value of the given data
 func (e *Encoder) Encode(src string) (string, error) {
-	e.generateSalt(e.SaltLen)
-	encodedPwd := pbkdf2.Key([]byte(src), e.salt, e.Iterations, e.KeyLen, e.HashFunc)
-	return hex.EncodeToString(encodedPwd), nil
+	if e.hashValue == nil {
+		_, err := e.Hash(src)
+		if err != nil {
+			return "", err
+		}
+	}
+	return hex.EncodeToString(e.hashValue), nil
 }
 
 // Verify compares a encoded data with its possible plaintext equivalent

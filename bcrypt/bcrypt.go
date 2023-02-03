@@ -12,15 +12,29 @@ const (
 )
 
 type Encoder struct {
-	Cost       int
-	hashedData []byte
+	Cost      int
+	hashValue []byte
+}
+
+// Hash Generate and return a hash value in []byte format
+func (e *Encoder) Hash(src string) ([]byte, error) {
+	if e.hashValue != nil {
+		return e.hashValue, nil
+	}
+	var err error
+	e.hashValue, err = bcrypt.GenerateFromPassword([]byte(src), e.Cost)
+	return e.hashValue, err
 }
 
 // Encode returns the hash value of the given data
 func (e *Encoder) Encode(src string) (string, error) {
-	data, err := bcrypt.GenerateFromPassword([]byte(src), e.Cost)
-	e.hashedData = data
-	return string(data), err
+	if e.hashValue == nil {
+		_, err := e.Hash(src)
+		if err != nil {
+			return "", err
+		}
+	}
+	return string(e.hashValue), nil
 }
 
 // Verify compares a encoded data with its possible plaintext equivalent

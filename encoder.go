@@ -4,6 +4,7 @@ import (
 	"gopkg.in/encoder.v1/argon2"
 	"gopkg.in/encoder.v1/bcrypt"
 	"gopkg.in/encoder.v1/hkdf"
+	"gopkg.in/encoder.v1/hmac"
 	"gopkg.in/encoder.v1/pbkdf2"
 	"gopkg.in/encoder.v1/scrypt"
 	"gopkg.in/encoder.v1/types"
@@ -44,6 +45,8 @@ func New(t types.EncoderType, opts ...types.Option) types.Encoder {
 			Info:     "",
 			HashLen:  types.DefaultKeyLen,
 		}
+	case types.Hmac:
+		e = &hmac.Encoder{HashFunc: types.DefaultHashFunc}
 	}
 	for _, opt := range opts {
 		opt.Apply(e)
@@ -74,4 +77,9 @@ func NewScryptEncoder(opts ...types.Option) types.Encoder {
 // NewHkdfEncoder Returns Hkdf encoder instance
 func NewHkdfEncoder(opts ...types.Option) types.Encoder {
 	return New(types.Hkdf, opts...)
+}
+
+// NewHmacEncoder Returns Hmac encoder instance
+func NewHmacEncoder(opts ...types.Option) types.Encoder {
+	return New(types.Hmac, opts...)
 }

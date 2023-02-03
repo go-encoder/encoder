@@ -26,24 +26,38 @@ type Encoder struct {
 	// Length of the random salt. 16 bytes is recommended for password hashing.
 	SaltLen uint32
 	// Length of the generated key. 16 bytes or more is recommended.
-	KeyLen uint32
-	salt   []byte
+	KeyLen    uint32
+	salt      []byte
+	hashValue []byte
+}
+
+// Hash Generate and return a hash value in []byte format
+func (e *Encoder) Hash(src string) ([]byte, error) {
+	if e.hashValue != nil {
+		return e.hashValue, nil
+	}
+	if e.salt == nil {
+		salt, err := types.GenerateRandomSalt(int(e.SaltLen))
+		if err != nil {
+			return nil, err
+		}
+		e.salt = salt
+	}
+	e.hashValue = argon2.IDKey([]byte(src), e.salt, e.Iterations, e.Memory, e.Threads, e.KeyLen)
+	return e.hashValue, nil
 }
 
 // Encode returns the hash value of the given data
 func (e *Encoder) Encode(src string) (string, error) {
-	if e.salt == nil {
-		salt, err := types.GenerateRandomSalt(int(e.SaltLen))
+	if e.hashValue == nil {
+		_, err := e.Hash(src)
 		if err != nil {
 			return "", err
 		}
-		e.salt = salt
 	}
-	hash := argon2.IDKey([]byte(src), e.salt, e.Iterations, e.Memory, e.Threads, e.KeyLen)
-
 	// Base64 encode the salt and hashed password.
 	b64Salt := base64.RawStdEncoding.EncodeToString(e.salt)
-	b64Hash := base64.RawStdEncoding.EncodeToString(hash)
+	b64Hash := base64.RawStdEncoding.EncodeToString(e.hashValue)
 	// Return a string using the standard encoded hash format.
 	encoded := fmt.Sprintf("$argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s", argon2.Version, e.Memory, e.Iterations, e.Threads, b64Salt, b64Hash)
 	return encoded, nil

@@ -1,6 +1,6 @@
 module gopkg.in/encoder.v1
 
-go 1.19
+go 1.17
 
 require golang.org/x/crypto v0.5.0
 

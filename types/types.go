@@ -13,6 +13,7 @@ const (
 	Pbkdf2        EncoderType = "pbkdf2" // use pbkdf2 hash
 	Argon2        EncoderType = "argon2" // use argon2 hash
 	Hkdf          EncoderType = "hkdf"   // use hkdf hash
+	Hmac          EncoderType = "hmac"   // use hmac hash
 	SaltLen       int         = 16       // default size of salt value
 	DefaultKeyLen             = 32
 )
@@ -26,6 +27,8 @@ type Encoder interface {
 	Verify(hash string, rawData string) (bool, error)
 	// GetSalt Returns the salt if exists, otherwise nil
 	GetSalt() ([]byte, error)
+	// Hash Generate and return a hash value in []byte format
+	Hash(src string) ([]byte, error)
 }
 
 // OptionFunc wraps a func so it satisfies the Option interface.

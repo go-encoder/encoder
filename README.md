@@ -12,26 +12,30 @@ const (
     Pbkdf2        EncoderType = "pbkdf2" // use pbkdf2 hash
     Argon2        EncoderType = "argon2" // use argon2 hash
     Hkdf          EncoderType = "hkdf"   // use hkdf hash
+    Hmac          EncoderType = "hmac"   // use hmac hash
 )
 ```
 
 Each hash type implements the `Encoder` interface
 ```go
 type Encoder interface {
-	// Encode returns the hash value of the given data
-	Encode(src string) (string, error)
-	// Verify compares a encoded data with its possible plaintext equivalent
-	Verify(hash string, rawData string) (bool, error)
-	// GetSalt Returns the salt if exists, otherwise nil
-	GetSalt() ([]byte, error)
+    // Encode returns the hash value of the given data
+    Encode(src string) (string, error)
+    // Verify compares a encoded data with its possible plaintext equivalent
+    Verify(hash string, rawData string) (bool, error)
+    // GetSalt Returns the salt if exists, otherwise nil
+    GetSalt() ([]byte, error)
+    // Hash Generate and return a hash value in []byte format
+    Hash(src string) ([]byte, error)
 }
 ```
 
-> 1. After using the `New()` method to obtain an Encoder instance, you can call its `Encode()` method to obtain the hash result of the specified data.
-> 2. use the `Verify()` method to compares a encoded data with its possible plaintext equivalent.
-> 3. `GetSalt()` method can get the automatically generated random string salt or the salt provided by yourself.
-> 4. When you call the `New()` method, you can also provide zero or more `Options` to help initialize an `Encoder` instance.
-
+1. After using the `**New()**` method to obtain an Encoder instance, you can call its `**Encode()**` method to obtain the hash result of the specified data.
+2. use the `**Verify()**` method to compares a encoded data with its possible plaintext equivalent.
+3. `GetSalt()` method can get the automatically generated random string salt or the salt provided by yourself.
+4. When you call the `**New()**` method, you can also provide zero or more `**Options**` to help initialize an `**Encoder**` instance.
+5. `**Hash()**` method returns the unencoded hash value in `**[]byte**` format
+6. `**Verify()**` method can only verify the result returned by `**Encode()**` method, not `**Hash()**` method. The result returned by `**Hash()**` is handled by the user.
 ### Installation
 
 ```bash
@@ -50,10 +54,12 @@ Following is an example of the usage of this package:
 
 > hash result example: $argon2id$v=19$m=65536,t=1,p=4$Te27FDFdjc7lofyIqKc4FA$XLkAG/lwiZGVvq5jVMTAIgqV2NZGDXSKFvKoIuCx/Pc
 ##### use default options
+
 ```go
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
 	"gopkg.in/encoder.v1"
 	"gopkg.in/encoder.v1/types"
@@ -63,20 +69,22 @@ func main() {
 	data := "hello world"
 	// Using the default options
 	// types.Argon2 types.Pbkdf2 types.Bcrypt types.Hkdf types.Scrypt
- 	encoding := encoder.New(types.Argon2) // or use encoder.NewArgon2Encoder()
+	encoding := encoder.New(types.Argon2) // or use encoder.NewArgon2Encoder()
 
 	hash, err := encoding.Encode(data)
 	if err != nil {
 		return
 	}
 	fmt.Println(hash)
+	salt, _ := encoding.GetSalt()
+	fmt.Println("salt: ", base64.StdEncoding.EncodeToString(salt))
 	verify, err := encoding.Verify(hash, data)
 	if err != nil {
 		return
 	}
 	if verify {
 		fmt.Println("match")
-    }
+	}
 }
 ```
 ##### use custom options
@@ -92,6 +100,7 @@ zero or more options can be used each time， supported options for `argon2`：
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
 	"gopkg.in/encoder.v1"
 	"gopkg.in/encoder.v1/argon2"
@@ -110,6 +119,8 @@ func main() {
 		return
 	}
 	fmt.Println(hash)
+	salt, _ := encoding.GetSalt()
+	fmt.Println("salt: ", base64.StdEncoding.EncodeToString(salt))
 	verify, err := encoding.Verify(hash, data)
 	if err != nil {
 		return
@@ -217,6 +228,7 @@ func main() {
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
 	"gopkg.in/encoder.v1"
 	"gopkg.in/encoder.v1/types"
@@ -232,6 +244,8 @@ func main() {
 		return
 	}
 	fmt.Println(hash)
+	salt, _ := encoding.GetSalt()
+	fmt.Println("salt: ", base64.StdEncoding.EncodeToString(salt))
 	verify, err := encoding.Verify(hash, data)
 	if err != nil {
 		return
@@ -254,6 +268,7 @@ package main
 
 import (
 	"crypto/sha512"
+	"encoding/base64"
 	"fmt"
 	"gopkg.in/encoder.v1"
 	"gopkg.in/encoder.v1/pbkdf2"
@@ -272,6 +287,8 @@ func main() {
 		return
 	}
 	fmt.Println(hash)
+	salt, _ := encoding.GetSalt()
+	fmt.Println("salt: ", base64.StdEncoding.EncodeToString(salt))
 	verify, err := encoding.Verify(hash, data)
 	if err != nil {
 		return
@@ -295,6 +312,7 @@ func main() {
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
 	"gopkg.in/encoder.v1"
 	"gopkg.in/encoder.v1/types"
@@ -312,6 +330,8 @@ func main() {
 		return
 	}
 	fmt.Println(hash)
+	salt, _ := encoding.GetSalt()
+	fmt.Println("salt: ", base64.StdEncoding.EncodeToString(salt))
 	verify, err := encoding.Verify(hash, data)
 	if err != nil {
 		return
@@ -332,6 +352,7 @@ zero or more options can be used each time， supported options for `scrypt`：
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
 	"gopkg.in/encoder.v1"
 	"gopkg.in/encoder.v1/scrypt"
@@ -350,6 +371,8 @@ func main() {
 		return
 	}
 	fmt.Println(hash)
+	salt, _ := encoding.GetSalt()
+	fmt.Println("salt: ", base64.StdEncoding.EncodeToString(salt))
 	verify, err := encoding.Verify(hash, data)
 	if err != nil {
 		return
@@ -373,6 +396,7 @@ func main() {
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
 	"gopkg.in/encoder.v1"
 	"gopkg.in/encoder.v1/types"
@@ -390,6 +414,8 @@ func main() {
 		return
 	}
 	fmt.Println(hash)
+	salt, _ := encoding.GetSalt()
+	fmt.Println("salt: ", base64.StdEncoding.EncodeToString(salt))
 	verify, err := encoding.Verify(hash, data)
 	if err != nil {
 		return
@@ -410,6 +436,7 @@ zero or more options can be used each time， supported options for `scrypt`：
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
 	"gopkg.in/encoder.v1"
 	"gopkg.in/encoder.v1/hkdf"
@@ -421,6 +448,83 @@ func main() {
 	// set cost
 	encoding := encoder.New(types.Hkdf, hkdf.WithSaltLen(32), hkdf.WithHashLen(64))
 	// encoder.NewHkdfEncoder(hkdf.WithSaltLen(32), hkdf.WithHashLen(64))
+
+	hash, err := encoding.Encode(data)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	fmt.Println(hash)
+	salt, _ := encoding.GetSalt()
+	fmt.Println("salt: ", base64.StdEncoding.EncodeToString(salt))
+	verify, err := encoding.Verify(hash, data)
+	if err != nil {
+		return
+	}
+	if verify {
+		fmt.Println("match")
+	}
+}
+```
+
+---
+#### HMAC
+> `hmac` Keyed-Hashing for Message Authentication [WIKI](https://en.wikipedia.org/wiki/HMAC)    
+> In cryptography, an HMAC (sometimes expanded as either keyed-hash message authentication code or hash-based message authentication code) is a specific type of message authentication code (MAC) involving a cryptographic hash function and a secret cryptographic key. As with any MAC, it may be used to simultaneously verify both the data integrity and authenticity of a message.  
+> HMAC can provide authentication using a shared secret instead of using digital signatures with asymmetric cryptography. It trades off the need for a complex public key infrastructure by delegating the key exchange to the communicating parties, who are responsible for establishing and using a trusted channel to agree on the key prior to communication.
+> hash result example: 1bc6681912e7162213dd29ffa4518300b5a19496c181ebc7d694b40f679ed5eb
+
+##### use default options
+```go
+package main
+
+import (
+	"fmt"
+	"gopkg.in/encoder.v1"
+	"gopkg.in/encoder.v1/types"
+)
+
+func main() {
+	data := "hello world"
+	// set cost
+	encoding := encoder.New(types.Hmac)
+	// encoder.NewHmacEncoder()
+
+	hash, err := encoding.Encode(data)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	fmt.Println(hash)
+	verify, err := encoding.Verify(hash, data)
+	if err != nil {
+		return
+	}
+	if verify {
+		fmt.Println("match")
+	}
+}
+```
+##### use custom options
+zero or more options can be used each time， supported options for `hmac`：
+* `WithKey` is the secret key. default value is 16
+* `WithHasFunc` Hash function used this time, default value is `sha256.New`
+```go
+package main
+
+import (
+	"crypto/sha512"
+	"fmt"
+	"gopkg.in/encoder.v1"
+	"gopkg.in/encoder.v1/hmac"
+	"gopkg.in/encoder.v1/types"
+)
+
+func main() {
+	data := "hello world"
+	// set cost
+	encoding := encoder.New(types.Hkdf, hmac.WithKey("my secrets"), hmac.WithHasFunc(sha512.New))
+	// encoder.NewHmacEncoder(hmac.WithKey("my secrets"), hmac.WithHasFunc(sha512.New))
 
 	hash, err := encoding.Encode(data)
 	if err != nil {

@@ -2,7 +2,6 @@ package encoder
 
 import (
 	"encoding/base64"
-	"gopkg.in/encoder.v1/argon2"
 	"gopkg.in/encoder.v1/types"
 	"testing"
 )
@@ -10,21 +9,21 @@ import (
 func TestNew(t *testing.T) {
 	data := "hello world"
 
-	encoder := New(types.Argon2, argon2.WithIterations(2))
-
-	hash, err := encoder.Encode(data)
+	encoding := New(types.Pbkdf2)
+	encoding.Hash(data)
+	hash, err := encoding.Encode(data)
 	if err != nil {
 		t.Error(err.Error())
 		return
 	}
 
-	salt, err := encoder.GetSalt()
+	salt, err := encoding.GetSalt()
 	if err != nil {
 		t.Error(err.Error())
 		return
 	}
 
-	verify, err := encoder.Verify(hash, data)
+	verify, err := encoding.Verify(hash, data)
 	if err != nil {
 		t.Error(err.Error())
 		return
