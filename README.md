@@ -45,6 +45,9 @@ Run `go test` in the package's directory to run test case.
 Following is an example of the usage of this package:
 ---
 #### Argon2
+> `Argon2` [WIKI](https://en.wikipedia.org/wiki/Argon2)  
+> Argon2 is a key derivation function that was selected as the winner of the 2015 Password Hashing Competition.  
+
 > hash result example: $argon2id$v=19$m=65536,t=1,p=4$Te27FDFdjc7lofyIqKc4FA$XLkAG/lwiZGVvq5jVMTAIgqV2NZGDXSKFvKoIuCx/Pc
 ##### use default options
 ```go
@@ -119,6 +122,9 @@ func main() {
 
 ---
 #### Bcrypt
+> `Bcrypt` [WIKI](https://en.wikipedia.org/wiki/Bcrypt)  
+> Besides incorporating a salt to protect against rainbow table attacks, bcrypt is an adaptive function: over time, the iteration count can be increased to make it slower, so it remains resistant to brute-force search attacks even with increasing computation power.  
+
 > `bcrypt` does not need to specify a salt, salt is automatically generated every time, and the `GetSalt` method will not return a salt. For the same value, the hash results of multiple executions are different, but each hash result can pass the `Verify` method, so only one result needs to be saved.
 
 > hash result example: $2a$10$jIlPSogBSONL.Y2pO1F3H.1KmpnhKMp9npWs2Q2X9rGiE0ZetrAC2
@@ -190,11 +196,9 @@ func main() {
 
 ---
 #### Pbkdf2
-> `PBKDF2` (Password-Based Key Derivation Function 2) https://en.wikipedia.org/wiki/PBKDF2
+> `PBKDF2` (Password-Based Key Derivation Function 2) [WIKI](https://en.wikipedia.org/wiki/PBKDF2)
 
-> Its basic principle is to use a pseudo-random function (such as HMAC function, sha512, etc.), take the plaintext (password) and a salt value (salt) as an input parameter, and then repeat the operation, and finally generate the secret key.
-> If the number of repetitions is large enough, the cost of cracking becomes very high. The addition of the salt value will also increase the difficulty of the "rainbow table" attack.
-> User passwords are stored using the PBKDF2 algorithm, which is relatively safe.
+> PBKDF2 applies a pseudorandom function, such as hash-based message authentication code (HMAC), to the input password or passphrase along with a salt value and repeats the process many times to produce a derived key, which can then be used as a cryptographic key in subsequent operations. The added computational work makes password cracking much more difficult, and is known as key stretching.  
 
 > You can specify the `hash` function used when hashing, the default is **`sha256.New`**.
 > Other hash functions available include:
@@ -261,6 +265,162 @@ func main() {
 	// set cost
 	encoding := encoder.New(types.Pbkdf2, pbkdf2.WithHasFunc(sha512.New), pbkdf2.WithIterations(20000))
 	// encoding := encoder.NewPbkdf2Encoder(pbkdf2.WithHasFunc(sha512.New), pbkdf2.WithIterations(20000))
+
+	hash, err := encoding.Encode(data)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	fmt.Println(hash)
+	verify, err := encoding.Verify(hash, data)
+	if err != nil {
+		return
+	}
+	if verify {
+		fmt.Println("match")
+	}
+}
+```
+
+---
+#### Scrypt
+> `Scrypt` [WIKI](https://en.wikipedia.org/wiki/Scrypt)  
+> scrypt is a cryptographic derivation algorithm created by Colin Percival. Using the scrypt algorithm to generate derived keys requires a lot of memory. The scrypt algorithm was published as the RFC 7914 standard in 2016.  
+> The main function of the password derivation algorithm is to generate a series of derivative passwords according to the initialized master password. This algorithm is mainly to resist the attack of brute force cracking. By increasing the complexity of password generation, it also increases the difficulty of brute force cracking  
+
+> hash result example: d3bec465e05605b71678ba83be09c602ff589c78d3f2edb9fb0e83a9f34fd81f
+
+##### use default options
+```go
+package main
+
+import (
+	"fmt"
+	"gopkg.in/encoder.v1"
+	"gopkg.in/encoder.v1/types"
+)
+
+func main() {
+	data := "hello world"
+	// set cost
+	encoding := encoder.New(types.Scrypt)
+	// encoding := encoder.NewScryptEncoder()
+
+	hash, err := encoding.Encode(data)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	fmt.Println(hash)
+	verify, err := encoding.Verify(hash, data)
+	if err != nil {
+		return
+	}
+	if verify {
+		fmt.Println("match")
+	}
+}
+```
+##### use custom options
+zero or more options can be used each time， supported options for `scrypt`：
+* `WithSaltLen` Length of the random salt. default value is 16
+* `WithSalt`   Specify the salt, do not use the automatically generated salt, default automatically generate random strings
+* `WithN` CPU/memory cost parameter, default value is 32768
+* `WithR` block size parameter, default value is 8
+* `WithP` parallelisation parameter, default value is 8
+```go
+package main
+
+import (
+	"fmt"
+	"gopkg.in/encoder.v1"
+	"gopkg.in/encoder.v1/scrypt"
+	"gopkg.in/encoder.v1/types"
+)
+
+func main() {
+	data := "hello world"
+	// set cost
+	encoding := encoder.New(types.Scrypt, scrypt.WithSaltLen(32))
+	// encoder.NewScryptEncoder(scrypt.WithSaltLen(32))
+
+	hash, err := encoding.Encode(data)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	fmt.Println(hash)
+	verify, err := encoding.Verify(hash, data)
+	if err != nil {
+		return
+	}
+	if verify {
+		fmt.Println("match")
+	}
+}
+```
+
+---
+#### Hkdf
+> `Hkdf` HMAC-based KDF(key derivation function) [WIKI](https://en.wikipedia.org/wiki/HKDF)  
+> HKDF is a simple key derivation function (KDF) based on the HMAC message authentication code. It was initially proposed by its authors as a building block in various protocols and applications, as well as to discourage the proliferation of multiple KDF mechanisms. The main approach HKDF follows is the "extract-then-expand" paradigm, where the KDF logically consists of two modules: the first stage takes the input keying material and "extracts" from it a fixed-length pseudorandom key, and then the second stage "expands" this key into several additional pseudorandom keys (the output of the KDF).   
+> It can be used, for example, to convert shared secrets exchanged via Diffie–Hellman into key material suitable for use in encryption, integrity checking or authentication
+
+> hash result example: 8477efcdc326dd85fb6713e9bd6a44fba66917a5d9e890a657bed2d7c6294c01
+
+##### use default options
+```go
+package main
+
+import (
+	"fmt"
+	"gopkg.in/encoder.v1"
+	"gopkg.in/encoder.v1/types"
+)
+
+func main() {
+	data := "hello world"
+	// set cost
+	encoding := encoder.New(types.Hkdf)
+	// encoder.NewHkdfEncoder()
+
+	hash, err := encoding.Encode(data)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	fmt.Println(hash)
+	verify, err := encoding.Verify(hash, data)
+	if err != nil {
+		return
+	}
+	if verify {
+		fmt.Println("match")
+	}
+}
+```
+##### use custom options
+zero or more options can be used each time， supported options for `scrypt`：
+* `WithSaltLen` Length of the random salt. default value is 16
+* `WithSalt`   Specify the salt, do not use the automatically generated salt, default automatically generate random strings
+* `WithHashLen` The length of the generated hash, default value is 32
+* `WithInfo` calling HMAC as the message field, default value is ""
+* `WithHasFunc` Hash function used this time, default value is `sha256.New`
+```go
+package main
+
+import (
+	"fmt"
+	"gopkg.in/encoder.v1"
+	"gopkg.in/encoder.v1/hkdf"
+	"gopkg.in/encoder.v1/types"
+)
+
+func main() {
+	data := "hello world"
+	// set cost
+	encoding := encoder.New(types.Hkdf, hkdf.WithSaltLen(32), hkdf.WithHashLen(64))
+	// encoder.NewHkdfEncoder(hkdf.WithSaltLen(32), hkdf.WithHashLen(64))
 
 	hash, err := encoding.Encode(data)
 	if err != nil {

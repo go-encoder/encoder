@@ -12,7 +12,7 @@ type Encoder struct {
 	salt     []byte
 	HashFunc func() hash.Hash
 	Info     string
-	HashLen  int
+	HashLen  int // The length of the generated hash
 }
 
 // Encode returns the hash value of the given data
