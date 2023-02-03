@@ -24,11 +24,11 @@ func New(t types.EncoderType, opts ...types.Option) types.Encoder {
 		}
 	case types.Argon2:
 		e = &argon2.Encoder{
-			Memory:  argon2.DefaultMemory,
-			Time:    argon2.DefaultTime,
-			KeyLen:  uint32(types.DefaultKeyLen),
-			SaltLen: uint32(types.SaltLen),
-			Threads: argon2.DefaultThreads,
+			Memory:     argon2.DefaultMemory,
+			Iterations: argon2.DefaultIterations,
+			KeyLen:     uint32(types.DefaultKeyLen),
+			SaltLen:    uint32(types.SaltLen),
+			Threads:    argon2.DefaultThreads,
 		}
 	case types.Scrypt:
 		e = &scrypt.Encoder{

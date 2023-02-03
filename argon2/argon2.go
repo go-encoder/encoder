@@ -10,16 +10,16 @@ import (
 )
 
 const (
-	DefaultMemory  uint32 = 64 * 1024
-	DefaultTime    uint32 = 1
-	DefaultThreads uint8  = 4
+	DefaultMemory     uint32 = 64 * 1024
+	DefaultIterations uint32 = 1
+	DefaultThreads    uint8  = 4
 )
 
 type Encoder struct {
 	// The amount of memory used by the algorithm (in kibibytes).
 	Memory uint32
 	// The number of iterations over the memory.
-	Time uint32
+	Iterations uint32
 	// The number of threads (or lanes) used by the algorithm.
 	// Recommended value is between 1 and runtime.NumCPU().
 	Threads uint8
@@ -39,20 +39,20 @@ func (e *Encoder) Encode(src string) (string, error) {
 		}
 		e.salt = salt
 	}
-	hash := argon2.IDKey([]byte(src), e.salt, e.Time, e.Memory, e.Threads, e.KeyLen)
+	hash := argon2.IDKey([]byte(src), e.salt, e.Iterations, e.Memory, e.Threads, e.KeyLen)
 
 	// Base64 encode the salt and hashed password.
 	b64Salt := base64.RawStdEncoding.EncodeToString(e.salt)
 	b64Hash := base64.RawStdEncoding.EncodeToString(hash)
 	// Return a string using the standard encoded hash format.
-	encoded := fmt.Sprintf("$argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s", argon2.Version, e.Memory, e.Time, e.Threads, b64Salt, b64Hash)
+	encoded := fmt.Sprintf("$argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s", argon2.Version, e.Memory, e.Iterations, e.Threads, b64Salt, b64Hash)
 	return encoded, nil
 }
 
 // Verify compares a encoded data with its possible plaintext equivalent
 func (e *Encoder) Verify(hash, rawData string) (bool, error) {
 	hashParts := strings.Split(hash, "$")
-	_, err := fmt.Sscanf(hashParts[3], "m=%d,t=%d,p=%d", &e.Memory, &e.Time, &e.Threads)
+	_, err := fmt.Sscanf(hashParts[3], "m=%d,t=%d,p=%d", &e.Memory, &e.Iterations, &e.Threads)
 	if err != nil {
 		return false, err
 	}
@@ -64,7 +64,7 @@ func (e *Encoder) Verify(hash, rawData string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	hashToCompare := argon2.IDKey([]byte(rawData), salt, e.Time, e.Memory, e.Threads, uint32(len(decodedHash)))
+	hashToCompare := argon2.IDKey([]byte(rawData), salt, e.Iterations, e.Memory, e.Threads, uint32(len(decodedHash)))
 	return subtle.ConstantTimeCompare(decodedHash, hashToCompare) == 1, nil
 }
 

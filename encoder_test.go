@@ -1,9 +1,8 @@
 package encoder
 
 import (
-	"crypto/sha512"
 	"encoding/base64"
-	"gopkg.in/encoder.v1/pbkdf2"
+	"gopkg.in/encoder.v1/argon2"
 	"gopkg.in/encoder.v1/types"
 	"testing"
 )
@@ -11,7 +10,7 @@ import (
 func TestNew(t *testing.T) {
 	data := "hello world"
 
-	encoder := New(types.Pbkdf2, pbkdf2.WithHasFunc(sha512.New))
+	encoder := New(types.Argon2, argon2.WithIterations(2))
 
 	hash, err := encoder.Encode(data)
 	if err != nil {

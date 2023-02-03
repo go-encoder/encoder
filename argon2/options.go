@@ -10,11 +10,11 @@ func WithMemory(memory uint32) types.Option {
 	})
 }
 
-// WithTime configure the time for Encoder, default value is 1
-func WithTime(time uint32) types.Option {
+// WithIterations configure the iterations for Encoder, default value is 1
+func WithIterations(iterations uint32) types.Option {
 	return types.OptionFunc(func(e types.Encoder) {
 		b := e.(*Encoder)
-		b.Time = time
+		b.Iterations = iterations
 	})
 }
 
