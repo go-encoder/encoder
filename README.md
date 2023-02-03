@@ -41,10 +41,10 @@ go get gopkg.in/encoder.v1
 
 Run `go test` in the package's directory to run test case.
 
-### Usage
+### **Usage**
 
 Following is an example of the usage of this package:
-
+---
 #### Argon2
 ##### use default options
 ```go
