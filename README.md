@@ -28,10 +28,10 @@ type Encoder interface {
 }
 ```
 
-After using the `New()` method to obtain an Encoder instance, you can call its `Encode()` method to obtain the hash result of the specified data, 
-or use the `Verify()` method to compares a encoded data with its possible plaintext equivalent.
-`GetSalt()` method can get the automatically generated random string salt or the salt provided by yourself.
-When you call the `New()` method, you can also provide zero or more `Options` to help initialize an `Encoder` instance.
+> 1. After using the `New()` method to obtain an Encoder instance, you can call its `Encode()` method to obtain the hash result of the specified data.
+> 2. use the `Verify()` method to compares a encoded data with its possible plaintext equivalent.
+> 3. `GetSalt()` method can get the automatically generated random string salt or the salt provided by yourself.
+> 4. When you call the `New()` method, you can also provide zero or more `Options` to help initialize an `Encoder` instance.
 
 ### Installation
 
@@ -41,11 +41,11 @@ go get gopkg.in/encoder.v1
 
 Run `go test` in the package's directory to run test case.
 
-### **Usage**
+### Usage
 
 Following is an example of the usage of this package:
 ---
-#### ***Argon2***
+#### `Argon2`
 ##### use default options
 ```go
 package main
