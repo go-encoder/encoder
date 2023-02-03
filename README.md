@@ -45,7 +45,7 @@ Run `go test` in the package's directory to run test case.
 
 Following is an example of the usage of this package:
 ---
-#### Argon2
+#### ***Argon2***
 ##### use default options
 ```go
 package main
